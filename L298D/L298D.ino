@@ -3,18 +3,12 @@ int M1 = 12;
 int E2 = 11;
 int M2 = 13;
 
-void setup() {
-  pinMode(M1, OUTPUT);
-  pinMode(M2, OUTPUT);
-}
-
 void forward() {
   int value;
-  for (value = 0 ; value <= 255; value += 5)
-  {
+  for (value = 0 ; value <= 255; value += 5) {
+
     //HIGH - BACKWARDS
     //LOW - FORWARD
-
     digitalWrite(M1, LOW);
     analogWrite(E1, value);
 
@@ -27,8 +21,8 @@ void forward() {
 
 void backward() {
   int value;
-  for (value = 0 ; value <= 255; value += 5)
-  {
+  for (value = 0 ; value <= 255; value += 5) {
+
     //HIGH - BACKWARDS
     //LOW - FORWARD
     digitalWrite(M1, HIGH);
@@ -39,6 +33,11 @@ void backward() {
     analogWrite(E2, value);
   }
   delay(100);
+}
+
+void setup() {
+  pinMode(M1, OUTPUT);
+  pinMode(M2, OUTPUT);
 }
 
 void loop() {
