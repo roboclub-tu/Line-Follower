@@ -1,6 +1,5 @@
 #include <QTRSensors.h>
 
-
 QTRSensors qtr;
 const uint8_t SensorCount = 6;
 uint16_t sensorValues[SensorCount];
@@ -15,6 +14,14 @@ int SumLeft = 0;
 int SumRight = 0;
 int SumDifference = 0;
 int Last = 0;
+
+void setLeftMotor(int value){
+   analogWrite(E1,value);
+}
+
+void setRightMotor(int value){
+  analogWrite(E2, value);
+}
 
 void configureSensors() {
   qtr.setTypeAnalog();
@@ -38,54 +45,30 @@ void calibrationMode() {
   digitalWrite(LED_BUILTIN, LOW);
 }
 
-void printCalibrationValues() {
-  // print the calibration minimum values measured when emitters were on
-  Serial.begin(9600);
-  for (uint8_t i = 0; i < SensorCount; i++) {
-    Serial.print(qtr.calibrationOn.minimum[i]);
-    Serial.print(' ');
-  }
-  Serial.println();
-
-  // print the calibration maximum values measured when emitters were on
-  for (uint8_t i = 0; i < SensorCount; i++) {
-    Serial.print(qtr.calibrationOn.maximum[i]);
-    Serial.print(' ');
-  }
-  Serial.println();
-  delay(1000);
-}
-
 void setup() {
-
   // configure the sensors
   configureSensors();
 
   //begin calibration
   calibrationMode();
-
-  //output values to terminal
-  printCalibrationValues();
-
+  
   pinMode(M1, OUTPUT);
   pinMode(M2, OUTPUT);
 }
 
 void loop() {
-
-  // read calibrated sensor values and obtain a measure of the line position
   uint16_t position = qtr.readLineBlack(sensorValues);
-  
+
   SumLeft =(sensorValues[0] + sensorValues[1] + sensorValues[2]);
   SumRight = (sensorValues[2] + sensorValues[3] + sensorValues[4]);
   SumDifference = (SumLeft - SumRight);
-  
-  // print the sensor values where values are in range 0 - 1000
-  for (uint8_t i = 0; i < SensorCount; i++) {
-    Serial.print(sensorValues[i]);
-    Serial.print('\t');
-  }
-  Serial.println(position);
-  delay(250);
+  Serial.print(SumLeft);
+  Serial.print(SumRight);
+  Serial.print(SumDifference);
 
+  if(abs(SumDifference) < 700){
+    setLeftMotor(175);
+    setRightMotor(175);
+    Serial.print("Forward");
+  }
 }

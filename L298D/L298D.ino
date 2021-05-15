@@ -3,18 +3,23 @@ int M1 = 12;
 int E2 = 11;
 int M2 = 13;
 
+const int lowerSpeed = 50;
+const int normalSpeed = 200;
+
 void forward() {
   int value;
   for (value = 0 ; value <= 255; value += 5) {
 
     //HIGH - BACKWARDS
     //LOW - FORWARD
-    digitalWrite(M1, LOW);
+    
+    //digitalWrite(M1, LOW);
     analogWrite(E1, value);
 
     //RIGHT WHEEL
-    digitalWrite(M2, LOW);
+    //digitalWrite(M2, LOW);
     analogWrite(E2, value);
+    
   }
   delay(1000);
 }
@@ -41,6 +46,6 @@ void setup() {
 }
 
 void loop() {
-  forward();
-  //backward();
+    //forward();
+    //backward();
 }
