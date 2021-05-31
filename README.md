@@ -1,5 +1,5 @@
 # Line-Follower
-In this repository there are several projects using the ESP32 microcontroller.
+In this repository there is a project using the Arduino Uno microcontroller.
 
 ## Table of contents
 * [Techologies used](#technologies-used)
