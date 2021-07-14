@@ -1,6 +1,11 @@
 # Line-Follower
 In this repository there is a project using the Arduino Uno microcontroller.
 
+
+## Folder Structure
++ QTRA_PID contains the code used to calculate position and move robot. More [here](https://create.arduino.cc/projecthub/anova9347/line-follower-robot-with-pid-controller-cdedbd)
++ Testing contains example code for testing the physical equipment.
+
 ## Table of contents
 * [Techologies used](#technologies-used)
 * [Line-Follower](#light-once-every-minute)
