@@ -2,7 +2,7 @@
 
 
 QTRSensors qtr;
-const uint8_t SensorCount = 6;
+const uint8_t SensorCount = 5;
 uint16_t sensorValues[SensorCount];
 
 //motors
@@ -11,10 +11,28 @@ int M1 = 12;
 int E2 = 11;
 int M2 = 13;
 
-int SumLeft = 0;
-int SumRight = 0;
-int SumDifference = 0;
-int Last = 0;
+int M1Speed = 175;
+int M2Speed = 175;
+
+//
+int sumSensors = 0;
+
+float Kp = 0.07;
+float Ki = 0.0008;
+float Kd = 0.6;
+int P;
+int I;
+int D;
+int lastError = 0;
+
+void setLeftMotor(int value){
+   analogWrite(E1,value);
+}
+
+void setRightMotor(int value){
+  analogWrite(E2, value);
+}
+
 
 void configureSensors() {
   qtr.setTypeAnalog();
@@ -56,6 +74,36 @@ void printCalibrationValues() {
   delay(1000);
 }
 
+void PID_control() {
+  uint16_t position = qtr.readLineBlack(sensorValues);
+  int error = 2000 - position;
+
+  P = error;
+  I = I + error;
+  D = error - lastError;
+  lastError = error;
+  int motorspeed = P*Kp + I*Ki + D*Kd;
+  
+  int motorspeeda = M1Speed + motorspeed;
+  int motorspeedb = M2Speed - motorspeed;
+  
+  if (motorspeeda > 255) {
+    motorspeeda = 255;
+  }
+  if (motorspeedb > 255) {
+    motorspeedb = 255;
+  }
+  if (motorspeeda < 0) {
+    motorspeeda = 0;
+  }
+  if (motorspeedb < 0) {
+    motorspeedb = 0;
+  } 
+
+  setLeftMotor(motorspeeda);
+  setRightMotor(motorspeedb);
+}
+
 void setup() {
 
   // configure the sensors
@@ -71,21 +119,48 @@ void setup() {
   pinMode(M2, OUTPUT);
 }
 
+
 void loop() {
 
   // read calibrated sensor values and obtain a measure of the line position
   uint16_t position = qtr.readLineBlack(sensorValues);
-  
-  SumLeft =(sensorValues[0] + sensorValues[1] + sensorValues[2]);
-  SumRight = (sensorValues[2] + sensorValues[3] + sensorValues[4]);
-  SumDifference = (SumLeft - SumRight);
-  
+ 
+
+
+  //Qtr pdf
+  /**int error = position - 2000;
+  int motorSpeed = KP * error + KD * (error - lastError);
+  lastError = error;
+  int m1Speed = M1Speed + motorSpeed;
+  int m2Speed = M2Speed - motorSpeed;
+
+  if (m1Speed < 0)
+  m1Speed = 0;
+  if (m2Speed < 0)
+  m2Speed = 0;**/
+
+  //setLeftMotor(m1Speed);
+  //setRightMotor(m2Speed);
+
+  PID_control();
+
   // print the sensor values where values are in range 0 - 1000
+  sumSensors = 0;
   for (uint8_t i = 0; i < SensorCount; i++) {
+    sumSensors += sensorValues[i];
     Serial.print(sensorValues[i]);
     Serial.print('\t');
   }
+
+  if(sumSensors < 50) {
+    setLeftMotor(0);
+    setRightMotor(0);
+   }
+  Serial.print(" SumSensors: ");
+  Serial.print(sumSensors);
+  Serial.print(" Position: ");
   Serial.println(position);
+
   delay(250);
 
 }

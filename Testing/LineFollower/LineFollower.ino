@@ -66,9 +66,5 @@ void loop() {
   Serial.print(SumRight);
   Serial.print(SumDifference);
 
-  if(abs(SumDifference) < 700){
-    setLeftMotor(175);
-    setRightMotor(175);
-    Serial.print("Forward");
-  }
+  //setRightMotor(175);
 }
